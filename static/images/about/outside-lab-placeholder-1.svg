@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 675" role="img" aria-labelledby="title desc">
-  <title id="title">Outside the lab placeholder</title>
-  <desc id="desc">A placeholder for a future personal photo.</desc>
-  <rect width="900" height="675" fill="#f2f2f2"/>
-  <path d="M0 500 L230 310 L390 440 L550 250 L900 515 V675 H0 Z" fill="#555555" opacity="0.45"/>
-  <circle cx="710" cy="165" r="70" fill="#ffffff"/>
-  <text x="450" y="610" text-anchor="middle" font-family="Arial, sans-serif" font-size="38" fill="#666666">Personal photo placeholder</text>
-</svg>

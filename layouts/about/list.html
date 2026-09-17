@@ -1,0 +1,38 @@
+{{ define "main" }}
+<section class="page-hero about-hero">
+  <div class="shell">
+    <h1>{{ .Title }}</h1>
+  </div>
+</section>
+
+<article class="shell about-page">
+  <div class="about-content">
+    {{ with site.Data.my_lens_images }}
+      <section class="about-section" aria-labelledby="my-lens-title">
+        <h2 id="my-lens-title">My Lens</h2>
+        {{ partial "my-lens-gallery.html" . }}
+      </section>
+    {{ end }}
+
+    {{ $notes := slice }}
+    {{ with site.GetPage "/about/notes" }}
+      {{ $notes = .RegularPages }}
+    {{ end }}
+    <section class="about-section personal-notes" aria-labelledby="personal-notes-title">
+      <h2 id="personal-notes-title">Personal Notes</h2>
+      {{ with $notes.ByDate.Reverse }}
+        <ul class="personal-notes-list" aria-label="Personal notes">
+          {{ range first 6 . }}
+            <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+          {{ end }}
+        </ul>
+        {{ if gt (len .) 6 }}
+          {{ with site.GetPage "/about/notes" }}
+            <a class="personal-notes-more" href="{{ .RelPermalink }}">View all notes &rarr;</a>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    </section>
+  </div>
+</article>
+{{ end }}

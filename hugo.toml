@@ -21,7 +21,7 @@ ignoreLogs = ["warning-home-page-is-leaf-bundle", "warning-deprecated-path"]
     pageRef = "/"
     weight = 10
   [[menus.main]]
-    name = "Research Experience"
+    name = "Research"
     pageRef = "/projects"
     weight = 20
   [[menus.main]]

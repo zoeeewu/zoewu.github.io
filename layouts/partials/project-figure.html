@@ -1,4 +1,12 @@
 <figure class="project-figure">
-  <img src="{{ .src }}" alt="{{ .alt }}" loading="lazy">
+{{ $src := .src | default "" }}
+{{ if strings.HasSuffix (lower $src) ".mov" }}
+  <div class="project-video" role="button" tabindex="0" aria-label="Play video">
+    <video src="{{ strings.TrimPrefix "/" $src | relURL }}" muted playsinline preload="metadata"></video>
+    <span class="project-video-play" aria-hidden="true"><span></span></span>
+  </div>
+{{ else }}
+    <img src="{{ strings.TrimPrefix "/" $src | relURL }}" alt="{{ .alt }}" loading="lazy">
+  {{ end }}
   {{ with .caption }}<figcaption>{{ . }}</figcaption>{{ end }}
 </figure>

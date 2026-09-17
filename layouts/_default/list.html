@@ -10,7 +10,7 @@
   <div class="content-flow">
     {{ if .Params.portrait }}
       <figure class="portrait-block">
-        <img src="{{ .Params.portrait }}" alt="Portrait placeholder" loading="lazy">
+        <img src="{{ strings.TrimPrefix "/" .Params.portrait | relURL }}" alt="Portrait placeholder" loading="lazy">
       </figure>
     {{ end }}
     {{ .Content }}
@@ -28,7 +28,7 @@
     {{ end }}
 
     {{ if .Params.academic_path }}
-      <h2>Academic / Research Path</h2>
+      <h2>Volunteer</h2>
       {{ range .Params.academic_path }}
         <section class="timeline-item">
           <h3>{{ .title }}</h3>
@@ -38,15 +38,8 @@
     {{ end }}
 
     {{ if .Params.outside_lab }}
-      <h2>Outside the Lab</h2>
-      <div class="outside-grid">
-        {{ range .Params.outside_lab }}
-          <figure>
-            <img src="{{ .image }}" alt="{{ .caption }}" loading="lazy">
-            <figcaption>{{ .caption }}</figcaption>
-          </figure>
-        {{ end }}
-      </div>
+      <h2>My Lens</h2>
+      {{ partial "my-lens-gallery.html" .Params.outside_lab }}
     {{ end }}
   </div>
 </article>

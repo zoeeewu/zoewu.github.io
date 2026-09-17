@@ -1,4 +1,4 @@
 +++
-title = "Research Projects"
+title = "Research Experience"
 +++
 

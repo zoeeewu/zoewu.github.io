@@ -11,9 +11,23 @@
     <div class="content-flow">
       {{ if .Params.portrait }}
         <figure class="portrait-block">
-          <img src="{{ .Params.portrait }}" alt="Portrait placeholder" loading="lazy">
+          <img src="{{ strings.TrimPrefix "/" .Params.portrait | relURL }}" alt="Portrait placeholder" loading="lazy">
         </figure>
       {{ end }}
+      {{ if eq .Section "projects" }}
+        <section class="project-summary">
+          <div class="project-summary-copy">
+            <h2>Project Summary</h2>
+            {{ with .Params.summary_image }}
+              <figure class="project-summary-image">
+                <img src="{{ strings.TrimPrefix "/" . | relURL }}" alt="{{ $.Params.summary_image_alt | default (printf "%s team" $.Title) }}" loading="eager">
+              </figure>
+            {{ end }}
+            {{ with .Params.project_summary }}{{ . | markdownify }}{{ end }}
+          </div>
+        </section>
+      {{ end }}
+
       {{ .Content }}
 
       {{ if .Params.interests }}
@@ -29,7 +43,7 @@
       {{ end }}
 
       {{ if .Params.academic_path }}
-        <h2>Academic / Research Path</h2>
+        <h2>Volunteer</h2>
         {{ range .Params.academic_path }}
           <section class="timeline-item">
             <h3>{{ .title }}</h3>
@@ -39,15 +53,8 @@
       {{ end }}
 
       {{ if .Params.outside_lab }}
-        <h2>Outside the Lab</h2>
-        <div class="outside-grid">
-          {{ range .Params.outside_lab }}
-            <figure>
-              <img src="{{ .image }}" alt="{{ .caption }}" loading="lazy">
-              <figcaption>{{ .caption }}</figcaption>
-            </figure>
-          {{ end }}
-        </div>
+        <h2>My Lens</h2>
+        {{ partial "my-lens-gallery.html" .Params.outside_lab }}
       {{ end }}
     </div>
 
@@ -58,29 +65,76 @@
             <dt>Status</dt>
             <dd>{{ .Params.project_status }}</dd>
           </div>
-          <div>
-            <dt>Role</dt>
-            <dd>{{ .Params.role }}</dd>
-          </div>
+          {{ with .Params.role }}
+            <div>
+              <dt>Role</dt>
+              <dd>{{ . }}</dd>
+            </div>
+          {{ end }}
+          {{ with .Params.methods }}
+            <div>
+              <dt>Tags</dt>
+              <dd>
+                <ul class="tag-list">
+                  {{ range . }}<li>{{ . }}</li>{{ end }}
+                </ul>
+              </dd>
+            </div>
+          {{ end }}
         </dl>
-        {{ with .Params.methods }}
-          <h2>Methods</h2>
-          <ul class="tag-list">
-            {{ range . }}<li>{{ . }}</li>{{ end }}
-          </ul>
-        {{ end }}
       </aside>
     {{ end }}
   </div>
 
-  {{ with .Params.figures }}
+  {{ $configuredFigures := .Params.figures | default (slice) }}
+  {{ $mainFigure := dict }}
+  {{ range $configuredFigures }}
+    {{ if and (eq (len $mainFigure) 0) (strings.Contains (lower (.src | default "")) "main") }}
+      {{ $mainFigure = . }}
+    {{ end }}
+  {{ end }}
+  {{ if and (eq (len $mainFigure) 0) (gt (len $configuredFigures) 0) }}
+    {{ $mainFigure = index $configuredFigures 0 }}
+  {{ end }}
+  {{ $media := slice }}
+  {{ with $mainFigure }}
+    {{ $media = $media | append . }}
+  {{ end }}
+  {{ range $configuredFigures }}
+    {{ if ne .src ($mainFigure.src | default "") }}
+      {{ $media = $media | append . }}
+    {{ end }}
+  {{ end }}
+
+  {{ with $media }}
     <section class="shell figure-section" aria-label="Project figures">
-      <h2>Figures and Workflow</h2>
-      <div class="figure-grid">
-        {{ range . }}
-          {{ partial "project-figure.html" . }}
-        {{ end }}
-      </div>
+      {{ if eq (len .) 1 }}
+        <div class="figure-static">
+          {{ partial "project-figure.html" (index . 0) }}
+        </div>
+      {{ else }}
+        <div class="figure-carousel" aria-label="Project figure carousel">
+          <div class="figure-carousel-frame">
+            {{ range $index, $figure := . }}
+              {{ $figureSrc := $figure.src | default "" }}
+              <figure class="project-figure figure-carousel-item" data-index="{{ $index }}"{{ if eq $index 0 }} data-main-image="true"{{ end }}>
+                {{ if strings.HasSuffix (lower $figureSrc) ".mov" }}
+                  <div class="project-video" role="button" tabindex="0" aria-label="Play video">
+                    <video src="{{ strings.TrimPrefix "/" $figureSrc | relURL }}" muted playsinline preload="metadata"></video>
+                    <span class="project-video-play" aria-hidden="true"><span></span></span>
+                  </div>
+                {{ else }}
+                  <img src="{{ strings.TrimPrefix "/" $figureSrc | relURL }}" alt="{{ $figure.alt }}" loading="{{ if eq $index 0 }}eager{{ else }}lazy{{ end }}">
+                {{ end }}
+                {{ with $figure.caption }}<figcaption>{{ . }}</figcaption>{{ end }}
+              </figure>
+            {{ end }}
+            <button class="figure-carousel-button figure-carousel-button-prev" type="button" aria-label="Previous image">&lt;</button>
+            <button class="figure-carousel-button figure-carousel-button-next" type="button" aria-label="Next image">&gt;</button>
+          </div>
+          <figcaption class="figure-carousel-caption" aria-live="polite"></figcaption>
+        </div>
+      {{ end }}
     </section>
   {{ end }}
 </article>

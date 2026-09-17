@@ -1,0 +1,16 @@
+{{- $items := . -}}
+{{- if $items -}}
+  <div class="my-lens-gallery" data-my-lens-gallery aria-label="My Lens photo gallery">
+    <div class="my-lens-track">
+      {{- range $index, $item := $items -}}
+        <img
+          class="my-lens-image"
+          src="{{ strings.TrimPrefix "/" $item.image | relURL }}"
+          alt="{{ $item.alt | default $item.caption | default (printf "My Lens photo %d" (add $index 1)) }}"
+          loading="{{ if lt $index 4 }}eager{{ else }}lazy{{ end }}"
+          draggable="false"
+          data-lens-original-index="{{ $index }}">
+      {{- end -}}
+    </div>
+  </div>
+{{- end -}}

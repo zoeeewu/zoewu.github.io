@@ -8,18 +8,21 @@
 
 <section class="shell project-list" aria-label="Research projects">
   {{ range .Pages.ByWeight }}
+    {{ $project := . }}
     <article class="project-card">
+      {{ if eq $project.File.BaseFileName "igem" }}
+        <img class="project-medal" src="{{ "images/projects/igem/igem-silver-award.png" | relURL }}" alt="" aria-hidden="true" loading="lazy">
+      {{ end }}
       {{ with .Params.figures }}
         {{ with index . 0 }}
-          <a class="project-thumb" href="{{ $.RelPermalink }}" aria-label="Open {{ $.Title }}">
-            <img src="{{ .src }}" alt="{{ .alt }}" loading="lazy">
+          <a class="project-thumb" href="{{ $project.RelPermalink }}" aria-label="Open {{ $project.Title }}">
+            <img src="{{ strings.TrimPrefix "/" .src | relURL }}" alt="{{ .alt }}" loading="lazy">
           </a>
         {{ end }}
       {{ end }}
       <div class="project-card-copy">
         <p class="meta">{{ .Params.project_status }}</p>
         <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-        <p>{{ .Summary | default .Params.summary }}</p>
         {{ with .Params.methods }}
           <ul class="tag-list" aria-label="Methods">
             {{ range . }}<li>{{ . }}</li>{{ end }}

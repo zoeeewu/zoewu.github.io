@@ -10,31 +10,35 @@
         {{ end }}
       </div>
     </div>
-    <aside class="snapshot" aria-label="Research snapshot">
-      <p>Research focus</p>
-      <strong>Placeholder: add your concise PhD-facing research identity.</strong>
+    <aside class="snapshot" aria-label="{{ .Params.research_focus.title }}">
+      <p>{{ .Params.research_focus.title }}</p>
+      <strong>{{ .Params.research_focus.content }}</strong>
     </aside>
   </div>
 </section>
 
 <section class="shell home-panels" aria-label="Profile overview">
   {{ $projects := slice }}
-  {{ range .Params.featured_projects }}
-    {{ $projects = $projects | append (printf "<div class=\"mini-item\"><a href=\"%s\">%s</a><p>%s</p></div>" .url .title .summary) }}
+  {{ range (where site.RegularPages "Params.home_featured" true).ByWeight }}
+    {{ $projects = $projects | append (printf "<div class=\"mini-item\"><a href=\"%s\">%s</a></div>" .RelPermalink (.Title | htmlEscape)) }}
   {{ end }}
-  {{ partial "accordion.html" (dict "title" "Featured Research Projects" "content" (delimit $projects "")) }}
-
-  {{ $interests := slice }}
-  {{ range .Params.research_interests }}
-    {{ $interests = $interests | append (printf "<div class=\"mini-item\"><strong>%s</strong><p>%s</p></div>" .area .details) }}
+  {{ with site.GetPage "/projects" }}
+    {{ $projects = $projects | append (printf "<a class=\"research-more\" href=\"%s\">Explore more research projects &rarr;</a>" .RelPermalink) }}
   {{ end }}
-  {{ partial "accordion.html" (dict "title" "Research Interests" "content" (delimit $interests "")) }}
+  {{ partial "accordion.html" (dict "title" "Research Experience" "content" (delimit $projects "")) }}
 
   {{ $education := slice }}
   {{ range .Params.education }}
     {{ $education = $education | append (printf "<div class=\"mini-item\"><strong>%s</strong><p>%s</p></div>" .title .details) }}
   {{ end }}
   {{ partial "accordion.html" (dict "title" "Education" "content" (delimit $education "")) }}
+
+
+  {{ $awards := slice }}
+  {{ range .Params.awards }}
+    {{ $awards = $awards | append (printf "<div class=\"mini-item\"><strong>%s</strong><p>%s</p></div>" .title .date) }}
+  {{ end }}
+  {{ partial "accordion.html" (dict "title" "Awards & Honors" "content" (delimit $awards "")) }}
 
   {{ partial "accordion.html" (dict "title" "CV" "content" (printf "<p>Placeholder: add your current CV PDF to <code>static/cv/</code> and update <code>params.cv</code> in <code>hugo.toml</code>.</p><a class=\"text-link\" href=\"%s\">Open CV</a>" site.Params.cv)) }}
 </section>
